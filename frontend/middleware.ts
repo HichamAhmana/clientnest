@@ -20,13 +20,18 @@ export function middleware(request: NextRequest) {
   // Check if the current route is an auth route
   const isAuthRoute = authRoutes.some(route => pathname.startsWith(route));
 
-  // Redirect authenticated users away from auth pages
-  if (isAuthenticated && isAuthRoute) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+  // Allow access to public routes
+  if (isPublicRoute) {
+    // If authenticated and trying to access auth pages (login/register), redirect to dashboard
+    if (isAuthenticated && isAuthRoute) {
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
+    // Otherwise allow access to public routes
+    return NextResponse.next();
   }
 
-  // Redirect unauthenticated users to login
-  if (!isAuthenticated && !isPublicRoute && !pathname.startsWith('/api')) {
+  // For protected routes, redirect to login if not authenticated
+  if (!isAuthenticated && !pathname.startsWith('/api')) {
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('callbackUrl', pathname);
     return NextResponse.redirect(loginUrl);
