@@ -179,6 +179,9 @@ if _cors_origins:
 else:
     CORS_ALLOW_ALL_ORIGINS = DEBUG
 
+# Allow credentials in CORS requests (required for cookies and Authorization headers)
+CORS_ALLOW_CREDENTIALS = True
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
