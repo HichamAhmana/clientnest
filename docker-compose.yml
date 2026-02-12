@@ -1,0 +1,51 @@
+services:
+  db:
+    image: postgres:15
+    container_name: clientnest-db
+    environment:
+      POSTGRES_DB: clientnest
+      POSTGRES_USER: clientnest
+      POSTGRES_PASSWORD: clientnest
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+    container_name: clientnest-backend
+    env_file:
+      - ./backend/.env
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: clientnest
+      POSTGRES_USER: clientnest
+      POSTGRES_PASSWORD: clientnest
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    command: >
+      sh -c "python manage.py migrate --noinput &&
+             python manage.py runserver 0.0.0.0:8000"
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: clientnest-frontend
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+
+volumes:
+  db_data:

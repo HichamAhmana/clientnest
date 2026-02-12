@@ -68,6 +68,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "core.middleware.JWTAuthMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -94,17 +95,31 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+#
+# For local development you can use SQLite by setting:
+#   DJANGO_DB_BACKEND=sqlite
+# in your backend .env file. Otherwise PostgreSQL is used.
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("POSTGRES_DB", "clientnest"),
-        "USER": os.environ.get("POSTGRES_USER", "clientnest"),
-        "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "clientnest"),
-        "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
-        "PORT": os.environ.get("POSTGRES_PORT", "5432"),
+DB_BACKEND = os.environ.get("DJANGO_DB_BACKEND", "postgres").lower()
+
+if DB_BACKEND == "sqlite":
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.environ.get("POSTGRES_DB", "clientnest"),
+            "USER": os.environ.get("POSTGRES_USER", "clientnest"),
+            "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "clientnest"),
+            "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
+            "PORT": os.environ.get("POSTGRES_PORT", "5432"),
+        }
+    }
 
 
 # Password validation
