@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ReactNode } from "react";
-import { ApolloProviderWrapper } from "../components/providers/apollo-provider";
-// import { MainLayoutShell } from "../components/layout/main-layout-shell"; // COMMENTED OUT
+import { ApolloProviderWrapper } from "@/components/providers/apollo-provider";
 
 export const metadata: Metadata = {
   title: "ClientNest",
@@ -14,7 +13,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en">
       <body suppressHydrationWarning>
         <ApolloProviderWrapper>
-          {children}  {/* NO MainLayoutShell for testing */}
+          {children}
         </ApolloProviderWrapper>
       </body>
     </html>

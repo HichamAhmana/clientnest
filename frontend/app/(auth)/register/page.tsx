@@ -7,7 +7,7 @@ import Link from 'next/link';
 export default function RegisterPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    name: '',
+    username: '',    // Changed: Django needs username
     email: '',
     password: '',
     confirmPassword: '',
@@ -26,35 +26,40 @@ export default function RegisterPage() {
     }
 
     // Validate password strength
-    if (formData.password.length < 8) {
-      setError('Password must be at least 8 characters long');
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters long');
       return;
     }
 
     setLoading(true);
 
     try {
-      const response = await fetch('/api/auth/register', {
+      console.log('Registering user:', { username: formData.username, email: formData.email });
+
+      const response = await fetch('http://localhost:8000/api/auth/register/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: formData.name,
+          username: formData.username,
           email: formData.email,
           password: formData.password,
         }),
       });
 
       const data = await response.json();
+      console.log('Registration response:', data);
 
       if (!response.ok) {
-        throw new Error(data.message || 'Registration failed');
+        throw new Error(data.message || data.error || 'Registration failed');
       }
 
-      // Successful registration - redirect to login or dashboard
+      // Successful registration - redirect to login
+      alert('Registration successful! Please login.');
       router.push('/login');
     } catch (err) {
+      console.error('Registration error:', err);
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
@@ -86,19 +91,19 @@ export default function RegisterPage() {
 
           <div className="rounded-md shadow-sm space-y-4">
             <div>
-              <label htmlFor="name" className="sr-only">
-                Full name
+              <label htmlFor="username" className="sr-only">
+                Username
               </label>
               <input
-                id="name"
-                name="name"
+                id="username"
+                name="username"
                 type="text"
-                autoComplete="name"
+                autoComplete="username"
                 required
-                value={formData.name}
+                value={formData.username}
                 onChange={handleChange}
                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Full name"
+                placeholder="Username"
               />
             </div>
             
@@ -132,7 +137,7 @@ export default function RegisterPage() {
                 value={formData.password}
                 onChange={handleChange}
                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Password (min. 8 characters)"
+                placeholder="Password (min. 6 characters)"
               />
             </div>
             

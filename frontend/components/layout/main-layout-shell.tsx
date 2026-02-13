@@ -8,7 +8,7 @@ import { BarChart3, Briefcase, FileText, LogOut, Users } from 'lucide-react';
 import { clearAccessToken, isAuthenticated } from '../../lib/auth-client';
 
 const navItems = [
-  { href: '/', label: 'Dashboard', icon: BarChart3 },
+  { href: '/dashboard', label: 'Dashboard', icon: BarChart3 },  // Fixed: was '/'
   { href: '/clients', label: 'Clients', icon: Users },
   { href: '/projects', label: 'Projects', icon: Briefcase },
   { href: '/invoices', label: 'Invoices', icon: FileText },
@@ -21,11 +21,11 @@ export function MainLayoutShell({ children }: { children: ReactNode }) {
   // Simple client-side auth guard
   useEffect(() => {
     const isAuthRoute =
-      pathname?.startsWith('/(auth)/login') ||
-      pathname?.startsWith('/(auth)/register');
+      pathname?.startsWith('/login') ||      // Fixed: removed (auth)
+      pathname?.startsWith('/register');     // Fixed: removed (auth)
 
     if (!isAuthRoute && !isAuthenticated()) {
-      router.push('/(auth)/login');
+      router.push('/login');                 // Fixed: removed (auth)
     }
   }, [pathname, router]);
 
@@ -66,7 +66,7 @@ export function MainLayoutShell({ children }: { children: ReactNode }) {
               className="inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-xs font-medium hover:bg-muted"
               onClick={() => {
                 clearAccessToken();
-                router.push('/(auth)/login');
+                router.push('/login');               // Fixed: removed (auth)
               }}
             >
               <LogOut className="h-3.5 w-3.5" />
@@ -79,4 +79,3 @@ export function MainLayoutShell({ children }: { children: ReactNode }) {
     </div>
   );
 }
-
