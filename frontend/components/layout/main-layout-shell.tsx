@@ -2,13 +2,13 @@
 
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { ReactNode, useEffect } from 'react';
+import { ReactNode } from 'react';
 import { clsx } from 'clsx';
 import { BarChart3, Briefcase, FileText, LogOut, Users } from 'lucide-react';
-import { clearAccessToken, isAuthenticated } from '../../lib/auth-client';
+import { clearAccessToken } from '@/lib/auth-client';
 
 const navItems = [
-  { href: '/dashboard', label: 'Dashboard', icon: BarChart3 },  // Fixed: was '/'
+  { href: '/dashboard', label: 'Dashboard', icon: BarChart3 },
   { href: '/clients', label: 'Clients', icon: Users },
   { href: '/projects', label: 'Projects', icon: Briefcase },
   { href: '/invoices', label: 'Invoices', icon: FileText },
@@ -18,16 +18,7 @@ export function MainLayoutShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
 
-  // Simple client-side auth guard
-  useEffect(() => {
-    const isAuthRoute =
-      pathname?.startsWith('/login') ||      // Fixed: removed (auth)
-      pathname?.startsWith('/register');     // Fixed: removed (auth)
-
-    if (!isAuthRoute && !isAuthenticated()) {
-      router.push('/login');                 // Fixed: removed (auth)
-    }
-  }, [pathname, router]);
+  // REMOVED THE AUTH CHECK - It's handled by middleware instead
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">
@@ -66,7 +57,7 @@ export function MainLayoutShell({ children }: { children: ReactNode }) {
               className="inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-xs font-medium hover:bg-muted"
               onClick={() => {
                 clearAccessToken();
-                router.push('/login');               // Fixed: removed (auth)
+                router.push('/login');
               }}
             >
               <LogOut className="h-3.5 w-3.5" />
